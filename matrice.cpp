@@ -58,7 +58,6 @@ Liste Matrice::Matrice_to_Liste(){
     for (int i = 0; i<mat.size(); i++){
         for(int j = 0; j<mat.at(0).size(); j++){
             if(!(std::isnan(mat.at(i).at(j)))){
-                /////int k = static_cast<int> (mat.at(i).at(j));
                 Arete b {sommets.dictbis[i], sommets.dictbis[j], mat.at(i).at(j)};
                 a.push_back(b);
             }
