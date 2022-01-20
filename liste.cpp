@@ -10,7 +10,7 @@ std::map<std::string,std::map<std::string, float>> liste_vide {};
 
 
 
-
+///Question 1 : Implémentation des méthodes de la classe Liste:
 Liste::Liste(const std::vector<Arete>& v,const Sommets& sommets):
     liste(liste_vide),sommets(sommets)
     {for(Arete a: v){
@@ -53,18 +53,19 @@ void Liste::print(){
 }
 
 
-///Question 3:
+///Question 3: Le vecteur de booléen Vu permet de marquer que le parcours est déjà passé par le sommet.
+///Cette fonction ne suffit pas à elle seule car il faut lui fournir le vecteur Vu initialisé qu'avec des false.
 void Liste::parcours_prof_rec_liste(std::string start, std::vector<bool>& Vu){
-    Vu.at(sommets.dict[start]) = true;
+    Vu.at(sommets.dict[start]) = true; ///On marque le sommet actuel comme ayant été visité.
     std::cout << "sommet parcouru : " << start << std::endl;
     std::vector<bool> b (sommets.dict.size(), true);
     std::vector<Arete> y;
     Arete z;
-    if(Vu == b){
+    if(Vu == b){ ///Condition d'arrêt : tous les sommets ont été vus
         return;
     }
     else{
-        y = voisins(start);
+        y = voisins(start); /// Sinon on applique la fonction sur les voisins qui n'ont pas été vus précédemment.
         while(!(y.empty())){
             z = y.back();
             y.pop_back();
@@ -84,15 +85,16 @@ void Liste::parcours_prof_rec_liste_final(std::string start){
 
 
 ///Question 4: 
-///Ce programme parcourt la composante connexe du sommet nommé start et actualise la liste des sommets vus
+///Cette fonction parcourt la composante connexe du sommet nommé start et actualise la liste des sommets vus
 std::vector<bool> Liste::parcours_prof_iter_liste(std::string start, std::vector<bool>& Vu){
     Arete a;
-    std::vector<std::pair<std::string,Arete>> aVoir {std::make_pair(start,a)};
+    std::vector<std::pair<std::string,Arete>> aVoir {std::make_pair(start,a)}; ///aVoir stocke les sommets qui doivent être traités
+    /// ainsi que l'arête qui dans le parcours a permis d'accéder à ce sommet. aVoir est un vector mais il est utilisé comme une pile.
     Vu.at(sommets.dict[start]) = true;
     std::string x;
     std::vector<Arete> y;
     Arete z;
-    while(!(aVoir.empty())){
+    while(!(aVoir.empty())){ /// La condition d'arrêt : il n'y a plus de sommets à traiter.
         x = aVoir.back().first;
         aVoir.back().second.print();
         std::cout << "sommet parcouru : " << x << std::endl;
@@ -110,7 +112,7 @@ std::vector<bool> Liste::parcours_prof_iter_liste(std::string start, std::vector
     return Vu;
 }
 
-///Programme final pour effectuer le parcours en profondeur
+///Fonction finale pour effectuer le parcours en profondeur
 ///On effectue un premier parcours sur la composante connexe du sommet d'origine.
 ///Ensuite on effectue autant de parcours que nécessaire jusqu'à ce que tous les sommets soient explorés.
 void Liste::parcours_prof_iter_liste_final(std::string start){
@@ -128,7 +130,7 @@ void Liste::parcours_prof_iter_liste_final(std::string start){
 
 
 
-///Question 5
+///Question 5 : On reprend le principe du parcours en profondeur en utilisant une structure de file plutôt qu'une structure de pile.
 void Liste::parcours_large_iter_liste(std::string start, int i){
     Arete a;
     std::queue<std::pair<std::string,Arete>> aVoir;
@@ -138,16 +140,15 @@ void Liste::parcours_large_iter_liste(std::string start, int i){
     std::string x;
     std::vector<Arete> y;
     Arete z;
-    int j;
     if (i!=0){
-        j = i+1;
+        i = i+1;
     }
     else{
-        j = -1;
+        i = -1;
     }
-    while(!(aVoir.empty())&&(j!=0)){
+    while(!(aVoir.empty())&&(i!=0)){
         if(x != aVoir.front().second.pere){
-            j = j-1;
+            i = i-1;
         }
         x = aVoir.front().first;
         aVoir.front().second.print();

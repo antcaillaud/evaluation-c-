@@ -6,6 +6,7 @@
 #include "matrice.h"
 #include "liste.h"
 
+///Question 1 : Implémentation des méthodes de la classe Matrice:
 std::vector<std::vector<float>> tableau_vide {};
 
 Matrice::Matrice():mat(tableau_vide){}
@@ -78,6 +79,8 @@ std::vector<Arete> Matrice::voisins(int i){
     return res;
 }
 
+///Question 3: Le vecteur de booléen Vu permet de marquer que le parcours est déjà passé par le sommet.
+///Cette fonction ne suffit pas à elle seule car il faut lui fournir le vecteur Vu initialisé qu'avec des false.
 void Matrice::parcours_prof_rec_matrice(int i, std::vector<bool>& Vu){
     Vu.at(i) = true;
     std::cout << "sommet parcouru : " << sommets.dictbis[i] << std::endl;
@@ -131,7 +134,9 @@ std::vector<bool> Matrice::parcours_prof_iter_matrice(int i, std::vector<bool>& 
     return Vu;
 }
 
-///Même principe que pour le parcours en profondeur avec les listes.
+///Fonction finale pour effectuer le parcours en profondeur
+///On effectue un premier parcours sur la composante connexe du sommet d'origine.
+///Ensuite on effectue autant de parcours que nécessaire jusqu'à ce que tous les sommets soient explorés.
 void Matrice::parcours_prof_iter_matrice_final(int i){
     std::vector<bool> Vu (sommets.dict.size(),false);
     std::vector<bool> a  (sommets.dict.size(),true);
@@ -145,6 +150,7 @@ void Matrice::parcours_prof_iter_matrice_final(int i){
     }
 }
 
+///Question 5 : On reprend le principe du parcours en profondeur en utilisant une structure de file plutôt qu'une structure de pile.
 void Matrice::parcours_large_iter_matrice(int i, int k){
     Arete a;
     std::queue<std::pair<int,Arete>> aVoir ;
@@ -154,16 +160,15 @@ void Matrice::parcours_large_iter_matrice(int i, int k){
     int x;
     std::vector<Arete> y;
     Arete z;
-    int j;
     if (k!=0){
-        j = k+1;
+        k = k+1;
     }
     else{
-        j = -1;
+        k = -1;
     }
-    while(!(aVoir.empty())&&(j!=0)){
+    while(!(aVoir.empty())&&(k!=0)){
         if(x != sommets.dict[aVoir.front().second.pere]){
-            j = j-1;
+            k = k-1;
         }
         x = aVoir.front().first;
         aVoir.front().second.print();
@@ -181,15 +186,16 @@ void Matrice::parcours_large_iter_matrice(int i, int k){
     }
 }
 
-///Question 7 : Algorithme de Floyd Warshall
+///Question 7 : Algorithme de Floyd Warshall. Celui-ci va retourner la matrice des poids des plus courts chemins
+/// et une matrice contenant un vecteur d'arête qui permet de reconstruire le plus court chemin.
 std::pair<Matrice,std::vector<std::vector<std::vector<Arete>>>> Matrice::Floyd_Warshall(){
     std::vector<std::vector<float>> res = mat;
     int n = mat.size();
     Arete a;
     std::vector<Arete> b (n, a);
     std::vector<std::vector<Arete>> c (n, b);
-    std::vector<std::vector<std::vector<Arete>>> chemins (n, c);
-    for(int i = 0; i<n; i++){
+    std::vector<std::vector<std::vector<Arete>>> chemins (n, c); ///construction de la matrice avec les vecteurs d'arêtes
+    for(int i = 0; i<n; i++){ /// On initialise la matrice des poids et la matrice des vecteurs d'arêtes 
         for(int j = 0; j<n; j++){
             if(!(std::isnan(res.at(i).at(j)))){
                 a.pere = sommets.dictbis[i];
@@ -198,20 +204,20 @@ std::pair<Matrice,std::vector<std::vector<std::vector<Arete>>>> Matrice::Floyd_W
                 chemins.at(i).at(j).push_back(a);
             }
             else if(i!=j){
-                res.at(i).at(j) = INFINITY;
+                res.at(i).at(j) = INFINITY; /// On utilise la valeur INFINITY plutôt que NAN pour les comparaisons
             }
         }
     }
-    for(int k = 0; k<n; k++){
+    for(int k = 0; k<n; k++){/// On lance enfin l'algorithme de Floyd Warshall
         for(int i = 0; i<n; i++){
             for(int j = 0; j<n; j++){
-                if(res.at(i).at(k)+res.at(k).at(j)<res.at(i).at(j)){
+                if(res.at(i).at(k)+res.at(k).at(j)<res.at(i).at(j)){ /// La comparaison sert uniquement à savoir si on modifie le chemin.
                     chemins.at(i).at(j) = chemins.at(i).at(k);
                     for(auto p: chemins.at(k).at(j)){
                         chemins.at(i).at(j).push_back(p);
                     }
                 }
-                res.at(i).at(j) = std::min(res.at(i).at(j), res.at(i).at(k)+res.at(k).at(j)); 
+                res.at(i).at(j) = std::min(res.at(i).at(j), res.at(i).at(k)+res.at(k).at(j)); /// Actualisation des poids à chaque itération
             }
         }
     }
