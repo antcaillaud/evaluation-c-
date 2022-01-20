@@ -1,0 +1,17 @@
+a 0
+b 1
+c 2
+d 3
+e 4
+fin des sommets
+a b 1
+a c 8
+b c 4
+c a 5
+d c 4
+e a 6
+c e 8
+a d 5
+b d 9
+e d 5
+c d 3
